@@ -1,16 +1,12 @@
 import { InlineKeyboard } from "grammy";
 
-const dateChoose = new InlineKeyboard()
-    .text('Так', 'dateYes')
-    .text('Ні', 'dateNo');
-
 const deliveryChoose = new InlineKeyboard()
     .text('Доставка (Безкоштовно)', 'delivery').row()
     .text('Самовивіз (Кременчуг вул. Чкалова, 186)', 'pickup');
 
 const infoKeyboard = new InlineKeyboard()
     .url('📸Instagram', 'https://www.instagram.com/tort.wow/')
-    .url('🍭Наш сайт', 'https://lukas-sweet.shop/')
+    .url('🍭Інтернет-магазин', 'https://lukas-sweet.shop/')
 
 const clearHelp = new InlineKeyboard()
     .url('Так', 'https://t.me/LukasSweetshop')
@@ -36,6 +32,10 @@ const cartConfirm = new InlineKeyboard()
     .text('🚚Замовити', 'orderCart')
     .text('🧹Очистити', 'clearCart')
 
+const paymentType = new InlineKeyboard()
+    .text('Сплатити готівкою', 'cash')
+    .text('Безготівковий розрахунок', 'cashless')
+
 const emptyKeyboard = new InlineKeyboard()
 
-export { dateChoose, deliveryChoose, infoKeyboard, clearHelp, help, orderConfirm, finalMenu, emptyKeyboard, productMenu, cartConfirm };
+export { deliveryChoose, infoKeyboard, clearHelp, help, orderConfirm, finalMenu, emptyKeyboard, productMenu, cartConfirm, paymentType };

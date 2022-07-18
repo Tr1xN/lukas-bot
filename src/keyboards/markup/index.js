@@ -6,13 +6,14 @@ const requestContact = new Keyboard()
 const mainMenu = new Keyboard()
     .text('🛒Зробити замовлення')
     .text('ℹ️Информація').row()
-    .text('🆘Потрібна допомога');
+    .text("🆘Зв'язок з менеджером");
 
 const cakeCategorys = new Keyboard()
-    .text('Торти "Ексклюзив"').row()
-    .text('Тістечка')
+    .text('🛍️Кошик').row()
+    .text('Торти "Ексклюзив"')
+    .text('Тістечка').row()
     .text('Пряники')
     .text('Печиво').row()
     .text('⬅️Головне меню');
 
-export { requestContact, mainMenu, cakeCategorys };
+export { requestContact, mainMenu, cakeCategorys }
