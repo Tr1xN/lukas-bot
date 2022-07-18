@@ -54,7 +54,7 @@ bot.on('msg', async ctx => {
             ctx.reply('Використовуй меню, для навігації⬇', { reply_markup: { resize_keyboard: true, keyboard: mainMenu.build() } })
         }
         if (text == '🛒Замовити торт')
-            ctx.reply('Меню тортів:', { reply_markup: { resize_keyboard: true, keyboard: cakeCategorys.build() } })
+            ctx.reply('Меню товарів:', { reply_markup: { resize_keyboard: true, keyboard: cakeCategorys.build() } })
         if (text == 'ℹ️Информація')
             ctx.reply('ПП ВТК «Лукас»\nУкраїна, м. Кременчук,\nвул. Чкалова 186\n0 800 50 50 91\nhotline@lukas.ua', { reply_markup: infoKeyboard })
         if (text == '⭐Залишити відгук')
