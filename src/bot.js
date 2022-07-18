@@ -24,7 +24,7 @@ const bot = new Bot(BOT_TOKEN);
 const managerPhoneNum = '+380981234516';
 
 function initial() {
-    return { product: {}, cart: [], order: {}, currentCategory: 'Торти "Ексклюзив"' };
+    return { product: {}, cart: [], order: {}, currentCategory: 'Торти "Ексклюзив"', waitDeliveryPoint: false };
 }
 bot.use(session({ initial }));
 
@@ -53,7 +53,7 @@ bot.on('msg', async ctx => {
             await sleep(1)
             ctx.reply('Використовуй меню, для навігації⬇', { reply_markup: { resize_keyboard: true, keyboard: mainMenu.build() } })
         }
-        if (text == '🛒Замовити торт')
+        if (text == '🛒Зробити замовлення')
             ctx.reply('Меню товарів:', { reply_markup: { resize_keyboard: true, keyboard: cakeCategorys.build() } })
         if (text == 'ℹ️Информація')
             ctx.reply('ПП ВТК «Лукас»\nУкраїна, м. Кременчук,\nвул. Чкалова 186\n0 800 50 50 91\nhotline@lukas.ua', { reply_markup: infoKeyboard })
@@ -99,11 +99,18 @@ bot.on('msg', async ctx => {
                 ctx.reply('Товар додано в кошик', { reply_markup: productMenu })
             }
         })
-        if (text == 'Більше тортів') {
+        if (text == 'Більше товарів') {
             nextPage(ctx, currentCategory)
         }
         if (text == 'Назад') {
             prevPage(ctx, currentCategory)
+        }
+
+        if(ctx.session.waitDeliveryPoint){
+            ctx.session.order.deliveryPoint = text;
+            await ctx.reply('Ваша ардеса: ' + text,{ reply_markup: { resize_keyboard: true, keyboard: cakeCategorys.build() } })
+            await ctx.reply('Бажаєте вказати дату вивезення?', { reply_markup: dateChoose } )
+            ctx.session.waitDeliveryPoint = false;
         }
     }
 })
@@ -119,11 +126,13 @@ bot.on('callback_query:data', async ctx => {
 
     if (data == 'openCart') {
         let cartList = '';
+        ctx.session.order.price = 0;
         for (let i = 0; i < cart.length; i++) {
+            ctx.session.order.price += cart[i].price;
             cartList += `${cart[i].cake} (${cart[i].price} грн.);\n`
         }
         ctx.deleteMessage();
-        ctx.reply(`Товари у вашому кошику: ${cart.length}\n\nВаш кошик:\n${cartList}`, { reply_markup: cartConfirm })
+        ctx.reply(`Товари у вашому кошику: ${cart.length}\n\nВаш кошик:\n${cartList}\nЦіна: ${ctx.session.order.price} грн.`, { reply_markup: cartConfirm })
     }
 
     if (data == 'orderCart') {
@@ -153,14 +162,14 @@ bot.on('callback_query:data', async ctx => {
         ctx.reply('Товар видалено з кошику')
     }
 
-    if (data == 'delivery' || data == 'pickup') {
-        if (data == 'delivery') {
-            ctx.session.order.deliveryPoint = 'Доставка'
-        }
-        if (data == 'pickup') {
-            ctx.session.order.deliveryPoint = 'Самовивіз'
-        }
+    if (data == 'delivery') {
+        ctx.deleteMessage()
+        ctx.reply('Вкажіть адрессу доставки:', { reply_markup: { remove_keyboard: true } })
+        ctx.session.waitDeliveryPoint = true
+    }
 
+    if (data == 'pickup') {
+        ctx.session.order.deliveryPoint = 'Самовивіз'
         ctx.editMessageText('Бажаєте вказати дату вивезення?', { reply_markup: dateChoose });
     }
 
