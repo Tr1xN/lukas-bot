@@ -18,7 +18,7 @@ moment.locale('uk');
 
 connectToMongo(process.env.MONGO_URI);
 let calendarParams = {}
-if (moment().hours() < 11) {
+if (moment().hours() < 13) {
     calendarParams = { minDate: moment().subtract('day', 1), maxDate: new Date().setMonth(new Date().getMonth() + 3) };
 }
 else {
@@ -40,7 +40,7 @@ bot.on('msg:contact', async ctx => {
     createUser({ firstName: ctx.from.first_name, phoneNumber: ctx.message.contact.phone_number, _id: ctx.from.id })
     ctx.reply('Привіт, ' + ctx.from.first_name + '!')
     await sleep(1)
-    ctx.reply('Ласкаво просимо в магазин Lukas!☺')
+    ctx.reply('Ласкаво просимо до WOW чат-боту!☺')
     await sleep(1)
     ctx.reply('Використовуй меню, для навігації⬇', { reply_markup: { resize_keyboard: true, keyboard: mainMenu.build() } })
 })
@@ -90,7 +90,7 @@ bot.on('msg', async ctx => {
                 ctx.reply(`Товари у вашому кошику: ${cart.length}\n\nВаш кошик:\n${cartList}\nВсього до сплати: ${ctx.session.order.price} грн.\nПри замовленні від 500 грн - доставка безкоштовна`, { reply_markup: cartConfirm })
             }
         }
-        if (text == 'ℹ️Информація')
+        if (text == 'ℹ️Інформація')
             ctx.reply('Wow tort. Україна, м. Кременчук, вул. Чкалова 186', { reply_markup: infoKeyboard })
         if (text == '⭐Залишити відгук')
             ctx.reply('Отправте фото чтобы оставить отзыв: (пока не работает)')
@@ -134,10 +134,10 @@ bot.on('msg', async ctx => {
                 ctx.reply('Товар додано в кошик', { reply_markup: productMenu })
             }
         })
-        if (text == 'Більше товарів') {
+        if (text == 'Наступна➡️') {
             nextPage(ctx, currentCategory)
         }
-        if (text == 'Назад') {
+        if (text == '⬅️Попередня') {
             prevPage(ctx, currentCategory)
         }
 
@@ -200,13 +200,13 @@ bot.on('callback_query:data', async ctx => {
 
     if(data == 'cash'){
         ctx.session.order.paymentType = 'Готівка';
-        ctx.editMessageText('Оберіть точку вивезення:', { reply_markup: deliveryChoose })
+        ctx.editMessageText('Оберіть спосіб отримання замовлення:', { reply_markup: deliveryChoose })
     }
 
     if(data == 'cashless'){
         ctx.session.order.paymentType = 'Безготівковий';
         ctx.editMessageText('Наші реквізити: 0000 0000 0000 0000')
-        ctx.reply('Оберіть точку вивезення:', { reply_markup: deliveryChoose })
+        ctx.reply('Оберіть спосіб отримання замовлення:', { reply_markup: deliveryChoose })
     }
 
     if (data == 'clearCart') {
@@ -234,9 +234,9 @@ bot.on('callback_query:data', async ctx => {
 
     if (data == 'helpNo') {
         if (order.date == undefined)
-            ctx.editMessageText('Підтвердіть замовлення:\n\nКошик:\n' + order.cart + '\nДата вивезення: (не вказана)' + '\nВсього до сплати: ' + order.price + 'грн\При замовленні від 500 грн - доставка безкоштовна', { reply_markup: orderConfirm })
+            ctx.editMessageText('Підтвердіть замовлення:\n\nКошик:\n' + order.cart + '\nДата отримання замовлення: (не вказана)' + '\nВсього до сплати: ' + order.price + 'грн\При замовленні від 500 грн - доставка безкоштовна', { reply_markup: orderConfirm })
         else
-            ctx.editMessageText('Підтвердіть замовлення:\n\nКошик:\n' + order.cart + '\nДата вивезення: ' + order.date + '\nВсього до сплати: ' + order.price + 'грн\nПри замовленні від 500 грн - доставка безкоштовна', { reply_markup: orderConfirm })
+            ctx.editMessageText('Підтвердіть замовлення:\n\nКошик:\n' + order.cart + '\nДата отримання замовлення: ' + order.date + '\nВсього до сплати: ' + order.price + 'грн\nПри замовленні від 500 грн - доставка безкоштовна', { reply_markup: orderConfirm })
     }
     /*if (data == 'liqpay')
         if (liqpayment(config.liqpayPublicKey, config.liqpayPrivateKey, order.price) == 'success')
@@ -247,7 +247,7 @@ bot.on('callback_query:data', async ctx => {
         })
         await createOrder(ctx, order)
         await optionsModel.findOne({}).then(async options => {
-            sMail(options.mail, ctx.from.first_name + ' (' + ctx.from.id + ')', 'Кошик:\n' + order.cart + '\nВсього до сплати: ' + order.price + ' грн\n' + 'Точка вивезення: ' + order.deliveryPoint + '\nДата вивезення: ' + order.date + '\nНомер телефону: ' + order.phoneNumber + '\nСпосіб оплати: ' + order.paymentType)
+            sMail(options.mail, ctx.from.first_name + ' (' + ctx.from.id + ')', 'Кошик:\n' + order.cart + '\nВсього до сплати: ' + order.price + ' грн\n' + 'Точка вивезення: ' + order.deliveryPoint + '\nДата отримання замовлення: ' + order.date + '\nНомер телефону: ' + order.phoneNumber + '\nСпосіб оплати: ' + order.paymentType)
         })
         ctx.session.order = {}
         ctx.session.cart = []

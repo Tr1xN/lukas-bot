@@ -5,7 +5,7 @@ const requestContact = new Keyboard()
 
 const mainMenu = new Keyboard()
     .text('🛒Зробити замовлення')
-    .text('ℹ️Информація').row()
+    .text('ℹ️Інформація').row()
     .text("🆘Зв'язок з менеджером");
 
 const cakeCategorys = new Keyboard()

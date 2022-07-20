@@ -40,12 +40,12 @@ function sendCakesPhotos(ctx, category) {
     cakeModel.find(category).then(cakes => {
         if (currentCakesPage != Math.ceil(cakes.length / cakesPerPage)) {
             for (let i = 0; i < cakesPerPage; i++) {
-                ctx.replyWithPhoto(new InputFile(cakes[(currentCakesPage - 1) * cakesPerPage + i].source), { caption: cakes[(currentCakesPage - 1) * cakesPerPage + i].name + `\nЦіна: ${cakes[(currentCakesPage - 1) * cakesPerPage + i].price} грн` }).catch(err => { console.log(err) })
+                ctx.replyWithPhoto(new InputFile(cakes[(currentCakesPage - 1) * cakesPerPage + i].source), { caption: cakes[(currentCakesPage - 1) * cakesPerPage + i].name + `\nОпис: ${cakes[(currentCakesPage - 1) * cakesPerPage + i].description}` + `\nЦіна: ${cakes[(currentCakesPage - 1) * cakesPerPage + i].price} грн` }).catch(err => { console.log(err) })
             }
         }
         else {
             for (let i = 0; i < cakes.length % cakesPerPage; i++) {
-                ctx.replyWithPhoto(new InputFile(cakes[(currentCakesPage - 1) * cakesPerPage + i].source), { caption: cakes[(currentCakesPage - 1) * cakesPerPage + i].name + `\nЦіна: ${cakes[(currentCakesPage - 1) * cakesPerPage + i].price} грн` }).catch(err => { console.log(err) })
+                ctx.replyWithPhoto(new InputFile(cakes[(currentCakesPage - 1) * cakesPerPage + i].source), { caption: cakes[(currentCakesPage - 1) * cakesPerPage + i].name + `\nОпис: ${cakes[(currentCakesPage - 1) * cakesPerPage + i].description}` + `\nЦіна: ${cakes[(currentCakesPage - 1) * cakesPerPage + i].price} грн` }).catch(err => { console.log(err) })
             }
         }
     })
@@ -57,7 +57,7 @@ function cakesMenuUpdate(ctx, category = { category: 'Святковий' }) {
         sendCakesPhotos(ctx, category)
 
         const menu = new Keyboard()
-            .text('Назад').text('Більше товарів').row();
+            .text('⬅️Попередня').text('Наступна➡️').row();
 
         if (currentCakesPage != Math.ceil(cakes.length / cakesPerPage)) {
             for (let i = 0; i < cakesPerPage; i++) {
@@ -115,7 +115,7 @@ async function createOrder(ctx, order) {
     if (order.date == undefined)
         order.date = '(не вказано)'
     await ctx.deleteMessage()
-    await ctx.reply('Ваше замовлення:\nКошик: ' + order.cart + '\nДата вивезення: ' + order.date + '\nВсього до сплати: ' + order.price + ' грн')
+    await ctx.reply('Ваше замовлення:\nКошик: ' + order.cart + '\nДата отримання замовлення: ' + order.date + '\nВсього до сплати: ' + order.price + ' грн')
     await ctx.reply('✅Замовлення підтверджено!✅')
     await ctx.reply("Найближчим часом з Вами зв'яжеться наш менеджер. Будь ласка, підтвердіть замовлення нашому менеджеру. Без підтвердження замовлення ми не зможемо взяти у виробництво.", {reply_markup: finalMenu})
 }
