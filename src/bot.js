@@ -18,7 +18,7 @@ moment.locale('uk');
 
 connectToMongo(process.env.MONGO_URI);
 let calendarParams = {}
-if (moment().hours() < 13) {
+if (moment().hours() < 11) {
     calendarParams = { minDate: moment().subtract('day', 1), maxDate: new Date().setMonth(new Date().getMonth() + 3) };
 }
 else {
