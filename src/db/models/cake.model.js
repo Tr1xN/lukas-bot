@@ -13,6 +13,14 @@ const cakeSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    weight:{
+        type: String,
+        required: false
+    },
+    expiration:{
+        type: String,
+        required: false
+    },
     source:{
         type: String,
         required:true

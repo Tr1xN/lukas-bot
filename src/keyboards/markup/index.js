@@ -3,6 +3,9 @@ import { Keyboard } from "grammy";
 const requestContact = new Keyboard()
     .requestContact('📞Надіслати номер телефону')
 
+const requestLocation = new Keyboard()
+    .requestLocation('🗺️Надіслати своє місцезнаходження');
+
 const mainMenu = new Keyboard()
     .text('🛒Зробити замовлення')
     .text('ℹ️Інформація').row()
@@ -10,10 +13,10 @@ const mainMenu = new Keyboard()
 
 const cakeCategorys = new Keyboard()
     .text('🛍️Кошик').row()
-    .text('Торти "Ексклюзив"')
-    .text('Тістечка').row()
-    .text('Пряники')
-    .text('Печиво').row()
+    .text('WOW торти')
+    .text('Печиво ТМ Любчик').row()
+    .text('Патріотичні цукерки')
+    .text('Пряники').row()
     .text('⬅️Головне меню');
 
-export { requestContact, mainMenu, cakeCategorys }
+export { requestContact, mainMenu, cakeCategorys, requestLocation }

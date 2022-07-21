@@ -3,8 +3,8 @@ import dotenv from 'dotenv';
 import moment from 'moment';
 
 import { connectToMongo, createUser, findUser } from './db/index.js';
-import { mainMenu, cakeCategorys, requestContact } from './keyboards/markup/index.js';
-import { deliveryChoose, infoKeyboard, clearHelp, help, orderConfirm, emptyKeyboard, productMenu, cartConfirm, paymentType } from './keyboards/inline/index.js';
+import { mainMenu, cakeCategorys, requestContact, requestLocation } from './keyboards/markup/index.js';
+import { deliveryChoose, infoKeyboard, clearHelp, help, orderConfirm, emptyKeyboard, productMenu, cartConfirm} from './keyboards/inline/index.js';
 import { cakesMenuUpdate, nextPage, prevPage, createOrder, sMail } from './customFuncs.js';
 import Calendar from './calendar.js';
 
@@ -32,7 +32,7 @@ const bot = new Bot(BOT_TOKEN);
 const managerPhoneNum = '+380981234516';
 
 function initial() {
-    return { product: {}, cart: [], order: {}, currentCategory: 'Торти "Ексклюзив"', waitDeliveryPoint: false };
+    return { product: {}, cart: [], order: {}, currentCategory: 'WOW торти', waitDeliveryPoint: false };
 }
 bot.use(session({ initial }));
 
@@ -72,22 +72,22 @@ bot.on('msg', async ctx => {
                 ctx.session.order.price = 0;
                 for (let i = 0; i < cart.length; i++) {
                     let prefix = '';
-                    if (cart[i].category == 'Торти "Ексклюзив"') {
+                    if (cart[i].category == 'WOW торти') {
                         prefix = "Торт "
                     }
-                    else if (cart[i].category == 'Тістечка') {
-                        prefix = "Тістечка "
+                    else if (cart[i].category == 'Патріотичні цукерки') {
+                        prefix = "Цукерки "
                     }
                     else if (cart[i].category == 'Пряники') {
                         prefix = "Пряники "
                     }
-                    else if (cart[i].category == 'Печиво') {
+                    else if (cart[i].category == 'Печиво ТМ Любчик') {
                         prefix = "Печиво "
                     }
                     ctx.session.order.price += cart[i].price;
                     cartList += `${prefix + cart[i].cake} (${cart[i].price} грн.);\n`
                 }
-                ctx.reply(`Товари у вашому кошику: ${cart.length}\n\nВаш кошик:\n${cartList}\nВсього до сплати: ${ctx.session.order.price} грн.\nПри замовленні від 500 грн - доставка безкоштовна`, { reply_markup: cartConfirm })
+                ctx.reply(`Товари у вашому кошику: ${cart.length}\n\nВаш кошик:\n${cartList}\nВсього до сплати: ${ctx.session.order.price} грн.\nПри замовленні від 500 грн - доставка безкоштовна\nДоставка, кожного дня крім суботи та неділі з 9:00 до 11:00 та з 16:00 до 18:00.`, { reply_markup: cartConfirm })
             }
         }
         if (text == 'ℹ️Інформація')
@@ -95,14 +95,14 @@ bot.on('msg', async ctx => {
         if (text == '⭐Залишити відгук')
             ctx.reply('Отправте фото чтобы оставить отзыв: (пока не работает)')
 
-        if (text == 'Торти "Ексклюзив"') {
-            await ctx.reply('Торти "Ексклюзив":')
-            ctx.session.currentCategory = 'Торти "Ексклюзив"'
+        if (text == 'WOW торти') {
+            await ctx.reply('WOW торти:')
+            ctx.session.currentCategory = 'WOW торти'
             cakesMenuUpdate(ctx, { category: text })
         }
-        if (text == 'Тістечка') {
-            await ctx.reply('Тістечка:')
-            ctx.session.currentCategory = 'Тістечка'
+        if (text == 'Патріотичні цукерки') {
+            await ctx.reply('Патріотичні цукерки:')
+            ctx.session.currentCategory = 'Патріотичні цукерки'
             cakesMenuUpdate(ctx, { category: text })
         }
         if (text == 'Пряники') {
@@ -110,9 +110,9 @@ bot.on('msg', async ctx => {
             ctx.session.currentCategory = 'Пряники'
             cakesMenuUpdate(ctx, { category: text })
         }
-        if (text == 'Печиво') {
-            await ctx.reply('Печиво:')
-            ctx.session.currentCategory = 'Печиво'
+        if (text == 'Печиво ТМ Любчик') {
+            await ctx.reply('Печиво ТМ Любчик:')
+            ctx.session.currentCategory = 'Печиво ТМ Любчик'
             cakesMenuUpdate(ctx, { category: text })
         }
 
@@ -134,17 +134,17 @@ bot.on('msg', async ctx => {
                 ctx.reply('Товар додано в кошик', { reply_markup: productMenu })
             }
         })
-        if (text == 'Наступна➡️') {
+        if (text == 'Ще торти➡️') {
             nextPage(ctx, currentCategory)
         }
-        if (text == '⬅️Попередня') {
+        if (text == '⬅️Ще торти') {
             prevPage(ctx, currentCategory)
         }
 
         if (ctx.session.waitDeliveryPoint) {
             ctx.session.order.deliveryPoint = text;
             await ctx.reply('Ваша ардеса: ' + text, { reply_markup: { resize_keyboard: true, keyboard: cakeCategorys.build() } })
-            ctx.reply('Оберіть дату вивезення:', { reply_markup: calendar.getCalendarKeyboard() })
+            ctx.reply('Оберіть дату доставки:', { reply_markup: calendar.getCalendarKeyboard() })
             ctx.session.waitDeliveryPoint = false;
         }
     }
@@ -164,27 +164,26 @@ bot.on('callback_query:data', async ctx => {
         let cartList = '';
         ctx.session.order.price = 0;
         for (let i = 0; i < cart.length; i++) {
-            if (cart[i].category == 'Торти "Ексклюзив"') {
+            if (cart[i].category == 'WOW торти') {
                 cartList += "Торт "
             }
-            else if (cart[i].category == 'Тістечка') {
-                cartList += "Тістечка "
+            else if (cart[i].category == 'Патріотичні цукерки') {
+                cartList += "Цукерки "
             }
             else if (cart[i].category == 'Пряники') {
                 cartList += "Пряники "
             }
-            else if (cart[i].category == 'Печиво') {
+            else if (cart[i].category == 'Печиво ТМ Любчик') {
                 cartList += "Печиво "
             }
             ctx.session.order.price += cart[i].price;
             cartList += `${cart[i].cake} (${cart[i].price} грн.);\n`
         }
         ctx.deleteMessage();
-        ctx.reply(`Товари у вашому кошику: ${cart.length}\n\nВаш кошик:\n${cartList}\nВсього до сплати: ${ctx.session.order.price} грн.\nПри замовленні від 500 грн - доставка безкоштовна`, { reply_markup: cartConfirm })
+        ctx.reply(`Товари у вашому кошику: ${cart.length}\n\nВаш кошик:\n${cartList}\nВсього до сплати: ${ctx.session.order.price} грн.\nПри замовленні від 500 грн - доставка безкоштовна\nДоставка, кожного дня крім суботи та неділі з 9:00 до 11:00 та з 16:00 до 18:00.`, { reply_markup: cartConfirm })
     }
 
     if (data == 'orderCart') {
-        ctx.deleteMessage();
         let cartList = '';
         ctx.session.order.price = 0;
         ctx.session.order.cartArray = [];
@@ -195,23 +194,12 @@ bot.on('callback_query:data', async ctx => {
         }
         ctx.session.order.cart = cartList;
         JSON.stringify(order.cartArray);
-        ctx.reply('Оберіть тип оплати:', { reply_markup: paymentType })
-    }
-
-    if(data == 'cash'){
-        ctx.session.order.paymentType = 'Готівка';
         ctx.editMessageText('Оберіть спосіб отримання замовлення:', { reply_markup: deliveryChoose })
-    }
-
-    if(data == 'cashless'){
-        ctx.session.order.paymentType = 'Безготівковий';
-        ctx.editMessageText('Наші реквізити: 0000 0000 0000 0000')
-        ctx.reply('Оберіть спосіб отримання замовлення:', { reply_markup: deliveryChoose })
     }
 
     if (data == 'clearCart') {
         ctx.deleteMessage();
-        ctx.reply('🗑️Кошик пустий')
+        ctx.reply('🗑️Кошик порожній')
         ctx.session.cart = [];
     }
 
@@ -223,31 +211,29 @@ bot.on('callback_query:data', async ctx => {
 
     if (data == 'delivery') {
         ctx.deleteMessage()
-        ctx.reply('Вкажіть адрессу доставки:', { reply_markup: { remove_keyboard: true } })
+        ctx.reply('Напишіть адрессу доставки, або відправте своє місцезнаходження⬇️', { reply_markup: { resize_keyboard: true, keyboard: requestLocation.build() } })
         ctx.session.waitDeliveryPoint = true
     }
 
     if (data == 'pickup') {
+        ctx.deleteMessage()
         ctx.session.order.deliveryPoint = 'Самовивіз'
-        ctx.reply('Оберіть дату вивезення:', { reply_markup: calendar.getCalendarKeyboard() })
+        ctx.reply('Оберіть дату доставки:', { reply_markup: calendar.getCalendarKeyboard() })
     }
 
     if (data == 'helpNo') {
         if (order.date == undefined)
-            ctx.editMessageText('Підтвердіть замовлення:\n\nКошик:\n' + order.cart + '\nДата отримання замовлення: (не вказана)' + '\nВсього до сплати: ' + order.price + 'грн\При замовленні від 500 грн - доставка безкоштовна', { reply_markup: orderConfirm })
+            ctx.editMessageText('Підтвердіть замовлення:\n\nКошик:\n' + order.cart + '\nДата отримання замовлення: (не вказана)' + '\nВсього до сплати: ' + order.price + 'грн\При замовленні від 500 грн - доставка безкоштовна\nДоставка, кожного дня крім суботи та неділі з 9:00 до 11:00 та з 16:00 до 18:00.', { reply_markup: orderConfirm })
         else
-            ctx.editMessageText('Підтвердіть замовлення:\n\nКошик:\n' + order.cart + '\nДата отримання замовлення: ' + order.date + '\nВсього до сплати: ' + order.price + 'грн\nПри замовленні від 500 грн - доставка безкоштовна', { reply_markup: orderConfirm })
+            ctx.editMessageText('Підтвердіть замовлення:\n\nКошик:\n' + order.cart + '\nДата отримання замовлення: ' + order.date + '\nВсього до сплати: ' + order.price + 'грн\nПри замовленні від 500 грн - доставка безкоштовна\nДоставка, кожного дня крім суботи та неділі з 9:00 до 11:00 та з 16:00 до 18:00.', { reply_markup: orderConfirm })
     }
-    /*if (data == 'liqpay')
-        if (liqpayment(config.liqpayPublicKey, config.liqpayPrivateKey, order.price) == 'success')
-            createOrder(ctx, order, ctx.from.id)*/
     if (data == 'bought') {
         await userModel.findOne({ _id: ctx.from.id }).then(user => {
             ctx.session.order.phoneNumber = user.phoneNumber
         })
         await createOrder(ctx, order)
         await optionsModel.findOne({}).then(async options => {
-            sMail(options.mail, ctx.from.first_name + ' (' + ctx.from.id + ')', 'Кошик:\n' + order.cart + '\nВсього до сплати: ' + order.price + ' грн\n' + 'Точка вивезення: ' + order.deliveryPoint + '\nДата отримання замовлення: ' + order.date + '\nНомер телефону: ' + order.phoneNumber + '\nСпосіб оплати: ' + order.paymentType)
+            sMail(options.mail, ctx.from.first_name + ' (' + ctx.from.id + ')', 'Кошик:\n' + order.cart + '\nВсього до сплати: ' + order.price + ' грн\n' + 'Точка вивезення: ' + order.deliveryPoint + '\nДата отримання замовлення: ' + order.date + '\nНомер телефону: ' + order.phoneNumber)
         })
         ctx.session.order = {}
         ctx.session.cart = []
@@ -285,6 +271,13 @@ bot.on('callback_query:data', async ctx => {
         ctx.reply("Бажаєте зв'язатися з менеджером та додатково проконсультуватися? (Зв'язатися з менеджером можно тільки у будні, з 9:00 до 17:00)", { reply_markup: help })
     }
     await ctx.answerCallbackQuery();
+})
+
+bot.on(':location', async (ctx) => {
+    ctx.session.order.deliveryPoint = ctx.message.location
+    await ctx.reply('Ваша ардеса: ' + text, { reply_markup: { resize_keyboard: true, keyboard: cakeCategorys.build() } })
+    ctx.reply('Оберіть дату доставки:', { reply_markup: calendar.getCalendarKeyboard() })
+    ctx.session.waitDeliveryPoint = false;
 })
 
 bot.start()
