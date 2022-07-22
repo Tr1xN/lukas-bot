@@ -57,7 +57,10 @@ function cakesMenuUpdate(ctx, category = { category: 'Святковий' }) {
         sendCakesPhotos(ctx, category)
 
         const menu = new Keyboard()
-            .text('⬅️Ще торти').text('Ще торти➡️').row();
+
+        if(cakes.length>6){
+            menu.text('⬅️Ще торти').text('Ще торти➡️').row();
+        }
 
         if (currentCakesPage != Math.ceil(cakes.length / cakesPerPage)) {
             for (let i = 0; i < cakesPerPage; i++) {
