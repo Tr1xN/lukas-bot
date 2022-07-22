@@ -7,6 +7,7 @@ import { mainMenu, cakeCategorys, requestContact, requestLocation } from './keyb
 import { deliveryChoose, infoKeyboard, clearHelp, help, orderConfirm, emptyKeyboard, productMenu, cartConfirm} from './keyboards/inline/index.js';
 import { cakesMenuUpdate, nextPage, prevPage, createOrder, sMail } from './customFuncs.js';
 import Calendar from './calendar.js';
+import { reverseLocation } from './geocoder.js';
 
 import cakeModel from './db/models/cake.model.js';
 import userModel from './db/models/user.model.js';
@@ -32,9 +33,17 @@ const bot = new Bot(BOT_TOKEN);
 const managerPhoneNum = '+380981234516';
 
 function initial() {
-    return { product: {}, cart: [], order: {}, currentCategory: 'WOW торти', waitDeliveryPoint: false };
+    return { product: {}, cart: [], order: {}, currentCategory: 'WOW торти', waitDeliveryPoint: false, deliveryPoint: '' };
 }
 bot.use(session({ initial }));
+
+bot.on(':location', async (ctx) => {
+    ctx.session.order.deliveryPoint = await reverseLocation(ctx.message.location.latitude, ctx.message.location.longitude)
+    console.log(ctx.session.order.deliveryPoint);
+    ctx.reply('Ваша ардеса: ' + ctx.session.order.deliveryPoint, { reply_markup: { resize_keyboard: true, keyboard: cakeCategorys.build() } })
+    ctx.reply('Оберіть дату доставки:', { reply_markup: calendar.getCalendarKeyboard() })
+    ctx.session.waitDeliveryPoint = false;
+})
 
 bot.on('msg:contact', async ctx => {
     createUser({ firstName: ctx.from.first_name, phoneNumber: ctx.message.contact.phone_number, _id: ctx.from.id })
@@ -233,7 +242,7 @@ bot.on('callback_query:data', async ctx => {
         })
         await createOrder(ctx, order)
         await optionsModel.findOne({}).then(async options => {
-            sMail(options.mail, ctx.from.first_name + ' (' + ctx.from.id + ')', 'Кошик:\n' + order.cart + '\nВсього до сплати: ' + order.price + ' грн\n' + 'Точка вивезення: ' + order.deliveryPoint + '\nДата отримання замовлення: ' + order.date + '\nНомер телефону: ' + order.phoneNumber)
+            sMail(options.mail, ctx.from.first_name + ' (' + ctx.from.id + ')', 'Кошик:\n' + order.cart + '\nВсього до сплати: ' + order.price + ' грн\n' + 'Адреса: ' + order.deliveryPoint + '\nДата отримання замовлення: ' + order.date + '\nНомер телефону: ' + order.phoneNumber)
         })
         ctx.session.order = {}
         ctx.session.cart = []
@@ -271,13 +280,6 @@ bot.on('callback_query:data', async ctx => {
         ctx.reply("Бажаєте зв'язатися з менеджером та додатково проконсультуватися? (Зв'язатися з менеджером можно тільки у будні, з 9:00 до 17:00)", { reply_markup: help })
     }
     await ctx.answerCallbackQuery();
-})
-
-bot.on(':location', async (ctx) => {
-    ctx.session.order.deliveryPoint = ctx.message.location
-    await ctx.reply('Ваша ардеса: ' + text, { reply_markup: { resize_keyboard: true, keyboard: cakeCategorys.build() } })
-    ctx.reply('Оберіть дату доставки:', { reply_markup: calendar.getCalendarKeyboard() })
-    ctx.session.waitDeliveryPoint = false;
 })
 
 bot.start()
