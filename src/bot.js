@@ -49,7 +49,7 @@ bot.on('msg:contact', async ctx => {
     createUser({ firstName: ctx.from.first_name, phoneNumber: ctx.message.contact.phone_number, _id: ctx.from.id })
     ctx.reply('Привіт, ' + ctx.from.first_name + '!')
     await sleep(1)
-    ctx.reply('Ласкаво просимо до WOW чат-боту!☺')
+    ctx.reply('Ласкаво просимо до боту WOW доставки!☺')
     await sleep(1)
     ctx.reply('Використовуй меню, для навігації⬇', { reply_markup: { resize_keyboard: true, keyboard: mainMenu.build() } })
 })
@@ -66,7 +66,7 @@ bot.on('msg', async ctx => {
         if (text == '/start') {
             ctx.reply('Привіт, ' + ctx.from.first_name + '!')
             await sleep(1)
-            ctx.reply('Ласкаво просимо в магазин Lukas!☺')
+            ctx.reply('Ласкаво просимо до боту WOW доставки!☺')
             await sleep(1)
             ctx.reply('Використовуй меню, для навігації⬇', { reply_markup: { resize_keyboard: true, keyboard: mainMenu.build() } })
         }

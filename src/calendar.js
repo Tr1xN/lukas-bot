@@ -58,7 +58,7 @@ export default class Calendar {
         this.getCalendarArray().forEach(week => {
             week.forEach(day => {
                 if (day !== ' ') {
-                    if (day.isAfter(moment(this.minDate)) && day.isBefore(moment(this.maxDate))) {
+                    if (day.isAfter(moment(this.minDate)) && day.isBefore(moment(this.maxDate)) && day.day() != 0 && day.day() != 6) {
                         calendarKeyboard.text(day.date(), day);
                     }
                     else {
