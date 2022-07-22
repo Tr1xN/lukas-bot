@@ -40,12 +40,12 @@ function sendCakesPhotos(ctx, category) {
     cakeModel.find(category).then(cakes => {
         if (currentCakesPage != Math.ceil(cakes.length / cakesPerPage)) {
             for (let i = 0; i < cakesPerPage; i++) {
-                ctx.replyWithPhoto(new InputFile(cakes[(currentCakesPage - 1) * cakesPerPage + i].source), { caption: `*${cakes[(currentCakesPage - 1) * cakesPerPage + i].name}*\nОпис: ${cakes[(currentCakesPage - 1) * cakesPerPage + i].description}\nЦіна: *${cakes[(currentCakesPage - 1) * cakesPerPage + i].price} грн*\nВага: ${cakes[(currentCakesPage - 1) * cakesPerPage + i].weight}\nТермін придатності: ${cakes[(currentCakesPage - 1) * cakesPerPage + i].expiration}`, parse_mode: "MarkdownV2" }).catch(err => { console.log(err) })
+                ctx.replyWithPhoto(new InputFile(cakes[(currentCakesPage - 1) * cakesPerPage + i].source), { caption: `<b>${cakes[(currentCakesPage - 1) * cakesPerPage + i].name}</b>\nОпис: ${cakes[(currentCakesPage - 1) * cakesPerPage + i].description}\nЦіна: <b>${cakes[(currentCakesPage - 1) * cakesPerPage + i].price} грн.</b>\nВага: ${cakes[(currentCakesPage - 1) * cakesPerPage + i].weight}\nТермін придатності: ${cakes[(currentCakesPage - 1) * cakesPerPage + i].expiration}`, parse_mode: "HTML" }).catch(err => { console.log(err) })
             }
         }
         else {
             for (let i = 0; i < cakes.length % cakesPerPage; i++) {
-                ctx.replyWithPhoto(new InputFile(cakes[(currentCakesPage - 1) * cakesPerPage + i].source), { caption: `*${cakes[(currentCakesPage - 1) * cakesPerPage + i].name}*\nОпис: ${cakes[(currentCakesPage - 1) * cakesPerPage + i].description}\nЦіна: *${cakes[(currentCakesPage - 1) * cakesPerPage + i].price} грн*\nВага: ${cakes[(currentCakesPage - 1) * cakesPerPage + i].weight}\nТермін придатності: ${cakes[(currentCakesPage - 1) * cakesPerPage + i].expiration}`, parse_mode: "MarkdownV2" }).catch(err => { console.log(err) })
+                ctx.replyWithPhoto(new InputFile(cakes[(currentCakesPage - 1) * cakesPerPage + i].source), { caption: `<b>${cakes[(currentCakesPage - 1) * cakesPerPage + i].name}</b>\nОпис: ${cakes[(currentCakesPage - 1) * cakesPerPage + i].description}\nЦіна: <b>${cakes[(currentCakesPage - 1) * cakesPerPage + i].price} грн.</b>\nВага: ${cakes[(currentCakesPage - 1) * cakesPerPage + i].weight}\nТермін придатності: ${cakes[(currentCakesPage - 1) * cakesPerPage + i].expiration}`, parse_mode: "HTML" }).catch(err => { console.log(err) })
             }
         }
     })
